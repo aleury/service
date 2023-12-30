@@ -11,6 +11,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// This is the application version number.
+// It will be set at build time.
+var build string = "develop"
+
 func main() {
 	log, err := logger.New("SALES-API")
 	if err != nil {
@@ -30,7 +34,7 @@ func run(log *zap.SugaredLogger) error {
 	// ------------------------------------------------------------------
 	// GOMAXPROCS
 
-	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
+	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD", build)
 
 	// ------------------------------------------------------------------
 
