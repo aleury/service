@@ -66,7 +66,19 @@ func run(log *zap.SugaredLogger) error {
 	// ------------------------------------------------------------------
 	// GOMAXPROCS
 
-	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD", build)
+	log.Infow("startup", "GOMAXPROCS", fmt.Sprint(runtime.GOMAXPROCS(0)), "BUILD", build)
+
+	// ------------------------------------------------------------------
+	// App Starting
+
+	log.Infow("starting service", "version", build)
+	defer log.Infow("shutdown complete")
+
+	out, err := conf.String(&cfg)
+	if err != nil {
+		return fmt.Errorf("generating config for output: %w", err)
+	}
+	log.Infow("startup", "config", out)
 
 	// ------------------------------------------------------------------
 
