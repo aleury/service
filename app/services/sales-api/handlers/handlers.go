@@ -16,7 +16,7 @@ type APIMuxConfig struct {
 }
 
 // APIMux construct a http.Handler with all application routes defined.
-func APIMux(cfg APIMuxConfig) http.Handler {
+func APIMux(cfg APIMuxConfig) *httptreemux.ContextMux {
 	mux := httptreemux.NewContextMux()
 
 	h := func(w http.ResponseWriter, r *http.Request) {
