@@ -42,6 +42,9 @@ tidy:
 	go mod tidy
 	go mod vendor
 
+metrics-view-local-sc:
+	expvarmon -ports="localhost:4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
 # ==============================================================================
 # Building containers
 
@@ -106,3 +109,4 @@ dev-update: all dev-load dev-restart
 
 # Run on k8s config change
 dev-update-apply: all dev-load dev-apply
+
