@@ -86,3 +86,12 @@ dev-status:
 	kubectl get nodes -o wide
 	kubectl get svc -o wide
 	kubectl get pods -o wide --watch --all-namespaces
+
+dev-restart:
+	kubectl rollout restart deployment $(APP) --namespace=$(NAMESPACE)
+
+# Run on code change
+dev-update: all dev-load dev-restart
+
+# Run on k8s config change
+dev-update-apply: all dev-load dev-apply
