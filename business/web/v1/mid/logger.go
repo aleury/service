@@ -10,6 +10,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// Logger creates a middleware that logs the request before and after it is
+// processed.
 func Logger(log *zap.SugaredLogger) web.Middleware {
 	return func(handler web.Handler) web.Handler {
 		return func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
