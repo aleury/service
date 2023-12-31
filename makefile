@@ -82,6 +82,12 @@ dev-apply:
 dev-logs:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) --all-containers=true -f --tail=100 --max-log-requests=6
 
+dev-describe-deployment:
+	kubectl describe deployment $(APP) --namespace=$(NAMESPACE)
+
+dev-describe-sales:
+	kubectl describe pod -l app=$(APP) --namespace=$(NAMESPACE)
+
 dev-status:
 	kubectl get nodes -o wide
 	kubectl get svc -o wide
