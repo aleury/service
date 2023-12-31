@@ -20,28 +20,29 @@ type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) e
 type App struct {
 	*httptreemux.ContextMux
 	shutdown chan os.Signal
+	mw       []Middleware
 }
 
 // NewApp creates an App value that handles a set of routes for the application.
-func NewApp(shutdown chan os.Signal) *App {
+func NewApp(shutdown chan os.Signal, mw ...Middleware) *App {
 	return &App{
 		ContextMux: httptreemux.NewContextMux(),
 		shutdown:   shutdown,
+		mw:         mw,
 	}
 }
 
 // Handle sets a handler function for a given HTTP method and path pair
 // to the application server mux.
-func (app *App) Handle(method string, path string, handler Handler) {
-	h := func(w http.ResponseWriter, r *http.Request) {
-		// ANY CODE I WANT HERE
+func (app *App) Handle(method string, path string, handler Handler, mw ...Middleware) {
+	handler = wrapMiddleware(mw, handler)
+	handler = wrapMiddleware(app.mw, handler)
 
+	h := func(w http.ResponseWriter, r *http.Request) {
 		if err := handler(r.Context(), w, r); err != nil {
 			fmt.Println(err)
 			return
 		}
-
-		// ANY CODE I WANT HERE
 	}
 	app.ContextMux.Handle(method, path, h)
 }
