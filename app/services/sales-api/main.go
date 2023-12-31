@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/aleury/service/app/services/sales-api/handlers"
 	"github.com/aleury/service/business/web/v1/debug"
 	"github.com/aleury/service/foundation/logger"
 	"github.com/ardanlabs/conf/v3"
@@ -37,7 +38,7 @@ func main() {
 }
 
 func run(log *zap.SugaredLogger) error {
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// Configuration
 
 	cfg := struct {
@@ -67,12 +68,12 @@ func run(log *zap.SugaredLogger) error {
 		return fmt.Errorf("parsing config: %w", err)
 	}
 
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// GOMAXPROCS
 
 	log.Infow("startup", "GOMAXPROCS", fmt.Sprint(runtime.GOMAXPROCS(0)), "BUILD", build)
 
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// App Starting
 
 	log.Infow("starting service", "version", build)
@@ -84,7 +85,7 @@ func run(log *zap.SugaredLogger) error {
 	}
 	log.Infow("startup", "config", out)
 
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// Start Debug Service
 
 	log.Infow("startup", "status", "debug v1 router started", "host", cfg.Web.DebugHost)
@@ -95,7 +96,7 @@ func run(log *zap.SugaredLogger) error {
 		}
 	}()
 
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// Start API Service
 
 	log.Infow("startup", "status", "initializing v1 api support")
@@ -103,9 +104,14 @@ func run(log *zap.SugaredLogger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
+	apiMux := handlers.APIMux(handlers.APIMuxConfig{
+		Shutdown: shutdown,
+		Log:      log,
+	})
+
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
-		Handler:      nil,
+		Handler:      apiMux,
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,
@@ -119,7 +125,7 @@ func run(log *zap.SugaredLogger) error {
 		serverErrors <- api.ListenAndServe()
 	}()
 
-	// ------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	// Shutdown
 
 	select {
