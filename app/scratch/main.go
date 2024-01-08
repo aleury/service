@@ -10,6 +10,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -19,11 +20,58 @@ import (
 )
 
 func main() {
-	err := genToken()
+	// err := genToken()
 	// err := genKey()
+	err := genTokenFromKey()
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func genTokenFromKey() error {
+	file, err := os.Open("zarf/keys/54bb2165-71e1-41a6-af3e-7da4a0e1e2c1.pem")
+	if err != nil {
+		return fmt.Errorf("opening key file: %w", err)
+	}
+	defer file.Close()
+
+	pem, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("reading key file: %w", err)
+	}
+
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(pem)
+	if err != nil {
+		return fmt.Errorf("parsing key file: %w", err)
+	}
+
+	claims := struct {
+		jwt.RegisteredClaims
+		Roles []string `json:"roles"`
+	}{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   "12345678",
+			Issuer:    "service project",
+			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+		},
+		Roles: []string{"ADMIN"},
+	}
+
+	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)
+	token := jwt.NewWithClaims(method, claims)
+	token.Header["kid"] = "54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"
+
+	tokenStr, err := token.SignedString(privateKey)
+	if err != nil {
+		return fmt.Errorf("signing token: %w", err)
+	}
+
+	fmt.Println("******* TOKEN ********")
+	fmt.Println(tokenStr)
+	fmt.Print("\n")
+
+	return nil
 }
 
 func genToken() error {

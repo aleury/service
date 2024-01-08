@@ -118,9 +118,9 @@ func (a *Auth) Authenticate(ctx context.Context, bearerToken string) (Claims, er
 	}
 
 	input := map[string]any{
-		"Token":  parts[1],
-		"Key":    publicKeyPEM,
-		"Issuer": a.issuer,
+		"Token": parts[1],
+		"Key":   publicKeyPEM,
+		"ISS":   a.issuer,
 	}
 
 	if err := a.opaPolicyEvaluation(ctx, opaAuthentication, RuleAuthenticate, input); err != nil {
