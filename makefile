@@ -64,6 +64,16 @@ metrics-view-local:
 test-endpoint:
 	curl -il $(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/test
 
+test-endpoint-local:
+	curl -il localhost:3000/test
+
+test-auth-endpoint:
+	curl -il -H "Authorization: Bearer ${TOKEN}" \
+		$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/test/auth
+
+test-auth-endpoint-local:
+	curl -il -H "Authorization: Bearer ${TOKEN}" localhost:3000/test/auth
+
 # ==============================================================================
 # Building containers
 
