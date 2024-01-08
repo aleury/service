@@ -5,6 +5,16 @@ SHELL = $(if $(wildcard $(SHELL_PATH)),/bin/ash,/bin/bash)
 # ==============================================================================
 # Kind
 # 	For full Kind v0.20 release notes: https://github.com/kubernetes-sigs/kind/releases/tag/v0.20.0
+#
+# RSA Keys
+#   To generate a private/public key PEM file.
+#   $ openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+#   $ openssl rsa -pubout -in private.pem -out public.pem
+#
+# OPA Playground
+#   https://play.openpolicyagent.org/
+#   https://academy.styra.com/
+#   https://www.openpolicyagent.org/docs/latest/policy-reference/
 
 # ==============================================================================
 # Define dependencies
@@ -30,6 +40,9 @@ VERSION         := 0.0.1
 SERVICE_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME):$(VERSION)
 
 # VERSION  		:= "0.0.1-$(shell git rev-parse --short HEAD)"
+
+run-scratch:
+	go run app/scratch/main.go
 
 run-local:
 	go run app/services/sales-api/main.go \
@@ -68,8 +81,8 @@ service:
 # Running from within k8s/kind
 
 dev-tele-up:
-	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
-	telepresence --context=kind-$(KIND_CLUSTER) helm install
+	# kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+	# telepresence --context=kind-$(KIND_CLUSTER) helm install
 	telepresence --context=kind-$(KIND_CLUSTER) connect
 
 dev-up-local:
@@ -125,4 +138,3 @@ dev-update: all dev-load dev-restart
 
 # Run on k8s config change
 dev-update-apply: all dev-load dev-apply
-

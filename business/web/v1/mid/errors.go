@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/aleury/service/business/web/auth"
 	v1 "github.com/aleury/service/business/web/v1"
 	"github.com/aleury/service/foundation/web"
 	"go.uber.org/zap"
@@ -28,6 +29,13 @@ func Errors(log *zap.SugaredLogger) web.Middleware {
 					er = v1.ErrorResponse{
 						Error: reqErr.Error(),
 					}
+
+				case auth.IsAuthError(err):
+					status = http.StatusUnauthorized
+					er = v1.ErrorResponse{
+						Error: http.StatusText(status),
+					}
+
 				default:
 					status = http.StatusInternalServerError
 					er = v1.ErrorResponse{
