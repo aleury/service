@@ -74,6 +74,18 @@ test-auth-endpoint:
 test-auth-endpoint-local:
 	curl -il -H "Authorization: Bearer ${TOKEN}" localhost:3000/test/auth
 
+readiness:
+	curl -il $(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:4000/debug/readiness
+
+readiness-local:
+	curl -il localhost:4000/debug/readiness
+
+liveness:
+	curl -il $(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:4000/debug/liveness
+
+liveness-local:
+	curl -il localhost:4000/debug/liveness
+
 # ==============================================================================
 # Building containers
 
