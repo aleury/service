@@ -8,6 +8,7 @@ import (
 	"github.com/aleury/service/business/web/auth"
 	"github.com/aleury/service/business/web/v1/mid"
 	"github.com/aleury/service/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
 
@@ -16,6 +17,7 @@ type APIMuxConfig struct {
 	Shutdown chan os.Signal
 	Log      *zap.SugaredLogger
 	Auth     *auth.Auth
+	DB       *sqlx.DB
 }
 
 // APIMux construct a http.Handler with all application routes defined.
