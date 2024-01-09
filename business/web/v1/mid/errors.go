@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/aleury/service/business/sys/validate"
 	"github.com/aleury/service/business/web/auth"
 	v1 "github.com/aleury/service/business/web/v1"
 	"github.com/aleury/service/foundation/web"
@@ -34,6 +35,14 @@ func Errors(log *zap.SugaredLogger) web.Middleware {
 					status = http.StatusUnauthorized
 					er = v1.ErrorResponse{
 						Error: http.StatusText(status),
+					}
+
+				case validate.IsFieldErrors(err):
+					status = http.StatusBadRequest
+					fieldErrors := validate.GetFieldErrors(err)
+					er = v1.ErrorResponse{
+						Error:  "data validation error",
+						Fields: fieldErrors.Fields(),
 					}
 
 				default:
