@@ -42,11 +42,13 @@ func (qf *QueryFilter) WithEmail(email mail.Address) {
 }
 
 // WithStartCreatedDate sets the StartCreatedDate field of the QueryFilter value.
-func (qf *QueryFilter) WithStartCreatedDate(start time.Time) {
-	qf.StartCreatedDate = &start
+func (qf *QueryFilter) WithStartCreatedDate(startDate time.Time) {
+	d := startDate.UTC()
+	qf.StartCreatedDate = &d
 }
 
 // WithEndCreatedDate sets the EndCreatedDate field of the QueryFilter value.
-func (qf *QueryFilter) WithEndCreatedDate(end time.Time) {
-	qf.EndCreatedDate = &end
+func (qf *QueryFilter) WithEndCreatedDate(endDate time.Time) {
+	d := endDate.UTC()
+	qf.EndCreatedDate = &d
 }
