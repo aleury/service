@@ -86,6 +86,12 @@ liveness:
 liveness-local:
 	curl -il localhost:4000/debug/liveness
 
+pgcli:
+	pgcli postgresql://postgres:postgres@database-service.$(NAMESPACE).svc.cluster.local
+
+pgcli-local:
+	pgcli postgresql://postgres:postgres@localhost
+
 # ==============================================================================
 # Building containers
 
@@ -102,10 +108,8 @@ service:
 # ==============================================================================
 # Running from within k8s/kind
 
-dev-tele-up:
-	# kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
-	# telepresence --context=kind-$(KIND_CLUSTER) helm install
-	telepresence --context=kind-$(KIND_CLUSTER) connect
+dev-adam:
+	kind load docker-image $(POSTGRES) --name $(KIND_CLUSTER)
 
 dev-up-local:
 	kind create cluster \
@@ -116,6 +120,7 @@ dev-up-local:
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
 
 	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+	kind load docker-image $(POSTGRES) --name $(KIND_CLUSTER)
 
 dev-up: dev-up-local
 	telepresence --context=kind-$(KIND_CLUSTER) helm install
@@ -132,6 +137,9 @@ dev-load:
 	kind load docker-image $(SERVICE_IMAGE) --name $(KIND_CLUSTER)
 
 dev-apply:
+	kustomize build zarf/k8s/dev/database | kubectl apply -f -
+	kubectl rollout status --namespace=$(NAMESPACE) --watch --timeout=120s sts/database
+
 	kustomize build zarf/k8s/dev/sales | kubectl apply -f -
 	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(APP) --for=condition=Ready
 
