@@ -133,7 +133,7 @@ dev-down-local:
 	kind delete cluster --name $(KIND_CLUSTER)
 
 dev-down:
-	telepresense quit -s
+	telepresence quit -s
 	kind delete cluster --name $(KIND_CLUSTER)
 
 dev-load:
