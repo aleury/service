@@ -3,6 +3,7 @@ package checkgrp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -44,7 +45,7 @@ func (h *Handlers) Readiness(w http.ResponseWriter, r *http.Request) {
 
 	h.Log.Infow(
 		"readiness",
-		"statusCode", statusCode,
+		"statusCode", fmt.Sprint(statusCode),
 		"method", r.Method,
 		"path", r.URL.Path,
 		"remoteAddr", r.RemoteAddr,
@@ -91,7 +92,7 @@ func (h *Handlers) Liveness(w http.ResponseWriter, r *http.Request) {
 
 	h.Log.Infow(
 		"liveness",
-		"statusCode", statusCode,
+		"statusCode", fmt.Sprint(statusCode),
 		"method", r.Method,
 		"path", r.URL.Path,
 		"remoteAddr", r.RemoteAddr,
