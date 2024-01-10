@@ -92,6 +92,9 @@ pgcli:
 pgcli-local:
 	pgcli postgresql://postgres:postgres@localhost
 
+migrate:
+	go run app/tooling/admin/main.go
+
 # ==============================================================================
 # Building containers
 
