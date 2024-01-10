@@ -152,6 +152,9 @@ dev-logs:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) --all-containers=true -f --tail=100 --max-log-requests=6 \
 		| go run app/tooling/logfmt/main.go -service=$(SERVICE_NAME)
 
+dev-logs-init:
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) -f --tail=100 -c init-migrate
+
 dev-describe-deployment:
 	kubectl describe deployment $(APP) --namespace=$(NAMESPACE)
 

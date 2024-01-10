@@ -10,6 +10,8 @@ import (
 	database "github.com/aleury/service/business/sys/database/pgx"
 )
 
+var build = "develop"
+
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
