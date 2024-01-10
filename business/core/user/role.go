@@ -38,7 +38,7 @@ func MustParseRole(value string) Role {
 }
 
 // Name returns the name of the role.
-func Name(r Role) string {
+func (r Role) Name() string {
 	return r.name
 }
 
