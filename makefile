@@ -114,6 +114,9 @@ service:
 dev-adam:
 	kind load docker-image $(POSTGRES) --name $(KIND_CLUSTER)
 
+dev-tele-up:
+	telepresence --context=kind-$(KIND_CLUSTER) connect
+
 dev-up-local:
 	kind create cluster \
 		--image $(KIND) \
