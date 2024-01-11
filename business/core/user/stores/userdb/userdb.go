@@ -35,7 +35,7 @@ func NewStore(log *zap.SugaredLogger, db *sqlx.DB) *Store {
 }
 
 // WithinTran runs passed function and does commit/rollback at the end.
-func (s *Store) WithinTran(ctx context.Context, fn func(s user.Storer) error) error {
+func (s *Store) WithinTran(ctx context.Context, fn func(s user.Store) error) error {
 	if s.inTran {
 		return fn(s)
 	}

@@ -5,6 +5,9 @@ import (
 	"os"
 
 	"github.com/aleury/service/app/services/sales-api/handlers/v1/testgrp"
+	"github.com/aleury/service/app/services/sales-api/handlers/v1/usergrp"
+	"github.com/aleury/service/business/core/user"
+	"github.com/aleury/service/business/core/user/stores/userdb"
 	"github.com/aleury/service/business/web/auth"
 	"github.com/aleury/service/business/web/v1/mid"
 	"github.com/aleury/service/foundation/web"
@@ -36,6 +39,13 @@ func APIMux(cfg APIMuxConfig) *web.App {
 		mid.Authenticate(cfg.Auth),
 		mid.Authorize(cfg.Auth, auth.RuleAdminOnly),
 	)
+
+	// -------------------------------------------------------------------------
+
+	usrCore := user.NewCore(userdb.NewStore(cfg.Log, cfg.DB))
+	ugh := usergrp.New(usrCore)
+
+	app.Handle(http.MethodGet, "/users", ugh.Query)
 
 	return app
 }

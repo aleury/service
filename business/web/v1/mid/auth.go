@@ -2,10 +2,18 @@ package mid
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/aleury/service/business/web/auth"
+	v1 "github.com/aleury/service/business/web/v1"
 	"github.com/aleury/service/foundation/web"
+	"github.com/google/uuid"
+)
+
+// Set of error variables for handling user group errors.
+var (
+	ErrInvalidID = errors.New("ID is not in its proper form")
 )
 
 // Authenticate validates a JWT from the `Authorization` header.
@@ -32,6 +40,18 @@ func Authorize(a *auth.Auth, rule string) web.Middleware {
 			claims := auth.GetClaims(ctx)
 			if claims.Subject == "" {
 				return auth.NewAuthError("authorize: you are not authorized for that action, no claims.")
+			}
+
+			// I will use a zero valued user id if it doesn't exist.
+			var userID uuid.UUID
+			id := web.Param(r, "user_id")
+			if id != "" {
+				var err error
+				userID, err = uuid.Parse(id)
+				if err != nil {
+					return v1.NewRequestError(ErrInvalidID, http.StatusBadRequest)
+				}
+				ctx = auth.SetUserID(ctx, userID)
 			}
 
 			if err := a.Authorize(ctx, claims, rule); err != nil {

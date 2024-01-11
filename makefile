@@ -95,6 +95,12 @@ pgcli-local:
 migrate:
 	go run app/tooling/admin/main.go
 
+query-users:
+	@curl -s "$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/users?page=1&rows=2&orderBy=name,ASC"
+
+query-users-local:
+	@curl -s localhost:3000/users?page=1&rows=2
+
 # ==============================================================================
 # Building containers
 

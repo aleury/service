@@ -22,9 +22,9 @@ var (
 	ErrAuthenticationFailure = errors.New("authentication failed")
 )
 
-// Storer inteface declares the behavior this package needs to persist and
+// Store inteface declares the behavior this package needs to persist and
 // retrieve data.
-type Storer interface {
+type Store interface {
 	Create(ctx context.Context, usr User) error
 	Update(ctx context.Context, usr User) error
 	Delete(ctx context.Context, usr User) error
@@ -37,12 +37,12 @@ type Storer interface {
 
 // Core manages the set of APIs for user access.
 type Core struct {
-	storer Storer
+	store Store
 }
 
 // NewCore constructs a core for user api access.
-func NewCore(storer Storer) *Core {
-	return &Core{storer: storer}
+func NewCore(store Store) *Core {
+	return &Core{store: store}
 }
 
 // Create inserts a new user into the database.
@@ -66,7 +66,7 @@ func (c *Core) Create(ctx context.Context, nu NewUser) (User, error) {
 		DateUpdated:  now,
 	}
 
-	if err := c.storer.Create(ctx, usr); err != nil {
+	if err := c.store.Create(ctx, usr); err != nil {
 		return User{}, fmt.Errorf("create: %w", err)
 	}
 
@@ -99,7 +99,7 @@ func (c *Core) Update(ctx context.Context, usr User, uu UpdateUser) (User, error
 	}
 	usr.DateUpdated = time.Now()
 
-	if err := c.storer.Update(ctx, usr); err != nil {
+	if err := c.store.Update(ctx, usr); err != nil {
 		return User{}, fmt.Errorf("update: %w", err)
 	}
 
@@ -108,7 +108,7 @@ func (c *Core) Update(ctx context.Context, usr User, uu UpdateUser) (User, error
 
 // Delete removes a user from the database.
 func (c *Core) Delete(ctx context.Context, usr User) error {
-	if err := c.storer.Delete(ctx, usr); err != nil {
+	if err := c.store.Delete(ctx, usr); err != nil {
 		return fmt.Errorf("delete: %w", err)
 	}
 	return nil
@@ -116,7 +116,7 @@ func (c *Core) Delete(ctx context.Context, usr User) error {
 
 // Query retrieves a list of existing users from the database.
 func (c *Core) Query(ctx context.Context, filter QueryFilter, orderBy order.By, pageNumber int, rowsPerPage int) ([]User, error) {
-	users, err := c.storer.Query(ctx, filter, orderBy, pageNumber, rowsPerPage)
+	users, err := c.store.Query(ctx, filter, orderBy, pageNumber, rowsPerPage)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}
@@ -125,12 +125,12 @@ func (c *Core) Query(ctx context.Context, filter QueryFilter, orderBy order.By, 
 
 // Count returns the total number of users in the store.
 func (c *Core) Count(ctx context.Context, filter QueryFilter) (int, error) {
-	return c.storer.Count(ctx, filter)
+	return c.store.Count(ctx, filter)
 }
 
 // QueryByID gets the specified user from the database.
 func (c *Core) QueryByID(ctx context.Context, userID uuid.UUID) (User, error) {
-	user, err := c.storer.QueryByID(ctx, userID)
+	user, err := c.store.QueryByID(ctx, userID)
 	if err != nil {
 		return User{}, fmt.Errorf("query: userID[%s]: %w", userID, err)
 	}
@@ -139,7 +139,7 @@ func (c *Core) QueryByID(ctx context.Context, userID uuid.UUID) (User, error) {
 
 // QueryByIDs gets the specified users from the database.
 func (c *Core) QueryByIDs(ctx context.Context, userIDs []uuid.UUID) ([]User, error) {
-	users, err := c.storer.QueryByIDs(ctx, userIDs)
+	users, err := c.store.QueryByIDs(ctx, userIDs)
 	if err != nil {
 		return nil, fmt.Errorf("query: userIDs[%s]: %w", userIDs, err)
 	}
@@ -148,7 +148,7 @@ func (c *Core) QueryByIDs(ctx context.Context, userIDs []uuid.UUID) ([]User, err
 
 // QueryByEmail gets the specified user from the database by email.
 func (c *Core) QueryByEmail(ctx context.Context, email mail.Address) (User, error) {
-	user, err := c.storer.QueryByEmail(ctx, email)
+	user, err := c.store.QueryByEmail(ctx, email)
 	if err != nil {
 		return User{}, fmt.Errorf("query: email[%s]: %w", email, err)
 	}
