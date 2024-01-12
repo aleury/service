@@ -34,9 +34,9 @@ func StartDB() (*docker.Container, error) {
 		return nil, fmt.Errorf("starting container: %w", err)
 	}
 
-	fmt.Printf("Image:		 %s\n", image)
-	fmt.Printf("ContainerID: %s\n", c.ID)
-	fmt.Printf("Host:		 %s\n", c.Host)
+	fmt.Printf("Image:\t\t%s\n", image)
+	fmt.Printf("Host:\t\t%s\n", c.Host)
+	fmt.Printf("ContainerID:\t%s\n", c.ID)
 
 	return c, nil
 }
@@ -162,8 +162,8 @@ func NewTest(t *testing.T, c *docker.Container) *Test {
 
 		writer.Flush()
 		fmt.Println("****************** LOGS ******************")
-		fmt.Println(buf.String())
-		fmt.Println("****************** LOGS ******************")
+		fmt.Print(buf.String())
+		fmt.Print("****************** LOGS ******************\n\n")
 	}
 
 	test := Test{

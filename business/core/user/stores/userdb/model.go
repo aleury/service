@@ -33,7 +33,7 @@ func toDBUser(usr user.User) dbUser {
 	return dbUser{
 		ID:           usr.ID,
 		Name:         usr.Name,
-		Email:        usr.Email.String(),
+		Email:        usr.Email.Address,
 		Roles:        dbarray.String(roles),
 		PasswordHash: usr.PasswordHash,
 		Enabled:      usr.Enabled,

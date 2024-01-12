@@ -32,7 +32,7 @@ func StartContainer(image string, port string, args ...string) (*Container, erro
 	hostIP, hostPort, err := extractIPPort(id, port)
 	if err != nil {
 		StopContainer(id)
-		return nil, fmt.Errorf("could not extract ip/port: %w", err)
+		return nil, fmt.Errorf("could not extract ip/port id[%s] port[%s]: %w", id, port, err)
 	}
 
 	c := Container{
@@ -81,7 +81,7 @@ func extractIPPort(id string, port string) (string, string, error) {
 	data := strings.ReplaceAll(out.String(), "}{", "},{")
 
 	var docs []struct {
-		HostIP   string
+		HostIp   string
 		HostPort string
 	}
 	if err := json.Unmarshal([]byte(data), &docs); err != nil {
@@ -89,8 +89,8 @@ func extractIPPort(id string, port string) (string, string, error) {
 	}
 
 	for _, doc := range docs {
-		if doc.HostIP == "::" {
-			return doc.HostIP, doc.HostPort, nil
+		if doc.HostIp != "::" {
+			return doc.HostIp, doc.HostPort, nil
 		}
 	}
 

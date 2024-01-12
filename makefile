@@ -183,3 +183,23 @@ dev-update: all dev-load dev-restart
 
 # Run on k8s config change
 dev-update-apply: all dev-load dev-apply
+
+# ==============================================================================
+# Running tests within the local dev environment.
+
+test-race:
+	CGO_ENABLED=1 go test -race -count=1 ./...
+
+test:
+	CGO_ENABLED=0 go test -count=1 -v ./...
+
+lint:
+	CGO_ENABLED=0 go vet ./...
+	staticcheck -checks=all ./...
+
+vuln-check:
+	govulncheck ./...
+
+test-all: test lint vuln-check
+
+test-all-race: test-race lint vuln-check
